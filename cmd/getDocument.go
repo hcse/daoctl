@@ -280,8 +280,6 @@ var getDocumentCmd = &cobra.Command{
 			hash = args[0]
 		}
 
-		fmt.Println("STARTING hash: " + hash)
-
 		var page Page
 		pages := cache.New(5*time.Minute, 10*time.Minute)
 		documents := cache.New(5*time.Minute, 10*time.Minute)

@@ -24,7 +24,10 @@ var getAssignmentsCmd = &cobra.Command{
 		ctx := context.Background()
 
 		periods := models.LoadPeriods(api, true, true)
-		roles := models.Roles(ctx, api, periods, "role")
+		roles, err := models.Roles(ctx, api)
+		if err != nil {
+			log.Fatalln("cannot retrieve roles", err)
+		}
 		includeExpired := viper.GetBool("get-assignments-cmd-expired")
 
 		if viper.GetBool("global-csv") {

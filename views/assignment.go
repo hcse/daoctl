@@ -58,7 +58,7 @@ func AssignmentTable(assignments []models.Assignment) *simpletable.Table {
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignCenter, Text: strconv.Itoa(int(assignments[index].ID))},
 			{Align: simpletable.AlignRight, Text: string(assignments[index].Assigned)},
-			{Align: simpletable.AlignLeft, Text: string(assignments[index].Role.Title)},
+			{Align: simpletable.AlignLeft, Text: string(assignments[index].Role.GetNodeLabel())},
 			{Align: simpletable.AlignRight, Text: util.FormatAsset(&assignments[index].Role.AnnualUSDSalary, 0)},
 			{Align: simpletable.AlignRight, Text: strconv.FormatFloat(assignments[index].TimeShare*100, 'f', -1, 64)},
 			{Align: simpletable.AlignRight, Text: strconv.FormatFloat(assignments[index].DeferredPay*100, 'f', 0, 64)},

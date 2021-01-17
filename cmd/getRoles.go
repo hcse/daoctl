@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/alexeyco/simpletable"
 	eos "github.com/eoscanada/eos-go"
@@ -20,30 +21,32 @@ var getRolesCmd = &cobra.Command{
 		api := eos.New(viper.GetString("EosioEndpoint"))
 		ctx := context.Background()
 
-		periods := models.LoadPeriods(api, true, true)
-
 		if viper.GetBool("global-active") == true {
-			printRolesTable(ctx, api, periods, "Current Roles", "role")
+			printRolesTable(ctx, api, "Current Roles")
 		}
 
-		if viper.GetBool("global-include-proposals") == true {
-			printRolesTable(ctx, api, periods, "Current Role Proposals", "proposal")
-		}
+		// if viper.GetBool("global-include-proposals") == true {
+		// 	printRolesTable(ctx, api, periods, "Current Role Proposals", "proposal")
+		// }
 
-		if viper.GetBool("global-failed-proposals") == true {
-			printRolesTable(ctx, api, periods, "Failed Role Proposals", "failedprops")
-		}
+		// if viper.GetBool("global-failed-proposals") == true {
+		// 	printRolesTable(ctx, api, periods, "Failed Role Proposals", "failedprops")
+		// }
 
-		if viper.GetBool("global-include-archive") == true {
-			printRolesTable(ctx, api, periods, "Archive of Role Proposals", "proparchive")
-		}
+		// if viper.GetBool("global-include-archive") == true {
+		// 	printRolesTable(ctx, api, periods, "Archive of Role Proposals", "proparchive")
+		// }
 	},
 }
 
-func printRolesTable(ctx context.Context, api *eos.API, periods []models.Period, title, scope string) {
+func printRolesTable(ctx context.Context, api *eos.API, title string) {
 	fmt.Println("\n", title)
-	roles := models.Roles(ctx, api, periods, scope)
-	rolesTable := views.RoleTable(roles)
+	roles, err := models.Roles(ctx, api)
+	if err != nil {
+		log.Printf("Unable to retrieve roles %v", err)
+		return
+	}
+	rolesTable := views.RoleTable(&roles)
 	rolesTable.SetStyle(simpletable.StyleCompactLite)
 
 	fmt.Println("\n" + rolesTable.String() + "\n\n")
