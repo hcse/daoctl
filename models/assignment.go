@@ -9,9 +9,8 @@ import (
 
 // Assignment represents a person assigned to a role for a specific period of time
 type Assignment struct {
-	ID                  uint64
-	Approved            bool
-	Owner               eos.Name
+	docgraph.Document
+	Assets              []eos.Asset
 	Assigned            eos.Name
 	BallotName          eos.Name
 	HusdPerPhase        eos.Asset

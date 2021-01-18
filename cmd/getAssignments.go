@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
@@ -11,6 +10,7 @@ import (
 	"github.com/eoscanada/eos-go"
 	"github.com/hypha-dao/daoctl/models"
 	"github.com/hypha-dao/daoctl/views"
+	"github.com/hypha-dao/document-graph/docgraph"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -23,47 +23,53 @@ var getAssignmentsCmd = &cobra.Command{
 		api := eos.New(viper.GetString("EosioEndpoint"))
 		ctx := context.Background()
 
-		periods := models.LoadPeriods(api, true, true)
-		roles, err := models.Roles(ctx, api)
+		// periods := models.LoadPeriods(api, true, true)
+		// roles, err := models.Roles(ctx, api)
+		// if err != nil {
+		// 	log.Fatalln("cannot retrieve roles", err)
+		// }
+		// includeExpired := viper.GetBool("get-assignments-cmd-expired")
+
+		// if viper.GetBool("global-csv") {
+		// 	assignmentsTable := getAssignmentTable(ctx, api, roles, periods, "Active Assignment", "assignment", includeExpired)
+		// 	csvData := models.TableToData(assignmentsTable)
+
+		// 	file, err := os.Create(viper.GetString("global-output-file"))
+		// 	if err != nil {
+		// 		log.Fatalln("error writing csv:", err)
+		// 	}
+
+		// 	defer file.Close()
+
+		// 	w := csv.NewWriter(file)
+		// 	w.WriteAll(csvData) // calls Flush internally
+
+		// 	if err := w.Error(); err != nil {
+		// 		log.Fatalln("error writing csv:", err)
+		// 	}
+		// } else {
+
+		_, err := docgraph.LoadGraph(ctx, api, eos.AN(viper.GetString("DAOContract")))
 		if err != nil {
-			log.Fatalln("cannot retrieve roles", err)
+			log.Fatalln("error loading graph :", err)
 		}
-		includeExpired := viper.GetBool("get-assignments-cmd-expired")
 
-		if viper.GetBool("global-csv") {
-			assignmentsTable := getAssignmentTable(ctx, api, roles, periods, "Active Assignment", "assignment", includeExpired)
-			csvData := models.TableToData(assignmentsTable)
+		// if viper.GetBool("global-active") == true {
+		// 	printAssignmentTable(ctx, api, roles, periods, "Active Assignment", "assignment", includeExpired)
+		// }
 
-			file, err := os.Create(viper.GetString("global-output-file"))
-			if err != nil {
-				log.Fatalln("error writing csv:", err)
-			}
+		// if viper.GetBool("global-include-proposals") == true {
+		// 	printAssignmentTable(ctx, api, roles, periods, "Current Assignment Proposals", "proposal", includeExpired)
+		// }
 
-			defer file.Close()
+		// if viper.GetBool("global-failed-proposals") == true {
+		// 	printAssignmentTable(ctx, api, roles, periods, "Failed Assignment Proposals", "failedprops", includeExpired)
+		// }
 
-			w := csv.NewWriter(file)
-			w.WriteAll(csvData) // calls Flush internally
-
-			if err := w.Error(); err != nil {
-				log.Fatalln("error writing csv:", err)
-			}
-		} else {
-			if viper.GetBool("global-active") == true {
-				printAssignmentTable(ctx, api, roles, periods, "Active Assignment", "assignment", includeExpired)
-			}
-
-			if viper.GetBool("global-include-proposals") == true {
-				printAssignmentTable(ctx, api, roles, periods, "Current Assignment Proposals", "proposal", includeExpired)
-			}
-
-			if viper.GetBool("global-failed-proposals") == true {
-				printAssignmentTable(ctx, api, roles, periods, "Failed Assignment Proposals", "failedprops", includeExpired)
-			}
-
-			if viper.GetBool("global-include-archive") == true {
-				printAssignmentTable(ctx, api, roles, periods, "Archive of Assignment Proposals", "proparchive", includeExpired)
-			}
-		}
+		// if viper.GetBool("global-include-archive") == true {
+		// 	printAssignmentTable(ctx, api, roles, periods, "Archive of Assignment Proposals", "proparchive", includeExpired)
+		// }
+		// }
 	},
 }
 

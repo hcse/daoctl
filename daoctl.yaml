@@ -1,7 +1,6 @@
-EosioEndpoint: https://api.telos.kitchen
+EosioEndpoint: https://testnet.telos.caleos.io
 AssetsAsFloat: true
 DAOContract: dao.hypha
-RootNode: 52a7ff82bd6f53b31285e97d6806d886eefb650e79754784e9d923d3df347c91
 Treasury:
   TokenContract: husd.hypha
   Symbol: HUSD
@@ -19,3 +18,5 @@ SeedsExchangeContract: tlosto.seeds
 EscrowContract: escrow.seeds
 HyphaSeedsAccount: hypha.seeds
 SeedsTokenContract: token.seeds
+DgraphEndpoint: 161.35.123.184:31968
+DHONode: 52a7ff82bd6f53b31285e97d6806d886eefb650e79754784e9d923d3df347c91
