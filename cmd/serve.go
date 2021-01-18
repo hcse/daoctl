@@ -242,6 +242,11 @@ var serveCmd = &cobra.Command{
 			Help: "Total number of documents",
 		})
 
+		edgeCount := prometheus.NewGauge(prometheus.GaugeOpts{
+			Name: "hypha_graph_edge_total",
+			Help: "Total number of edges",
+		})
+
 		voteEventCount := prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: "hypha_dao_voteevents",
 			Help: "Number of times users have voted in last 24 hours",
@@ -327,11 +332,18 @@ var serveCmd = &cobra.Command{
 
 				docs, err := docgraph.GetAllDocuments(ctx, api, eos.AN(viper.GetString("DAOContract")))
 				if err == nil {
-					fmt.Println("document count: " + strconv.Itoa(len(docs)))
 					documentCount.Set(float64(len(docs)))
 				} else {
 					errorCount.Add(1)
 					log.Println("Retrieval error: an error querying the total number of documents from "+viper.GetString("DAOContract"), err)
+				}
+
+				edges, err := docgraph.GetAllEdges(ctx, api, eos.AN(viper.GetString("DAOContract")))
+				if err == nil {
+					edgeCount.Set(float64(len(edges)))
+				} else {
+					errorCount.Add(1)
+					log.Println("Retrieval error: an error querying the total number of edges from "+viper.GetString("DAOContract"), err)
 				}
 
 				query := hyperion.NewQuery("castvote", viper.GetString("TelosDecideContract"), "")
@@ -345,7 +357,6 @@ var serveCmd = &cobra.Command{
 					log.Println("Error updating the vote count: ", err)
 				}
 
-				// log.Println("Sleeping for : " + viper.GetDuration("ScrapeInterval").String())
 				time.Sleep(viper.GetDuration("ScrapeInterval"))
 			}
 		}()
@@ -355,7 +366,7 @@ var serveCmd = &cobra.Command{
 		r.MustRegister(hyphaSupply)
 		r.MustRegister(hvoiceSupply)
 		r.MustRegister(husdSupply)
-		// r.MustRegister(memberCount)
+		r.MustRegister(edgeCount)
 		// r.MustRegister(applicantCount)
 		// r.MustRegister(openProposals)
 		r.MustRegister(seedsBalance)
