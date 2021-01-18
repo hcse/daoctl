@@ -185,7 +185,7 @@ var serveCmd = &cobra.Command{
 		ctx := context.Background()
 		api := getAPI()
 
-		log.Println(yamlStringSettings())
+		// log.Println(yamlStringSettings())
 
 		errorCount := prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: "hypha_prometheus_errors",
@@ -207,20 +207,20 @@ var serveCmd = &cobra.Command{
 			Help: "Total amount of HUSD tokens in circulation",
 		})
 
-		memberCount := prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "hypha_dao_membership_members",
-			Help: "Number of members enrolled in the DAO",
-		})
+		// memberCount := prometheus.NewGauge(prometheus.GaugeOpts{
+		// 	Name: "hypha_dao_membership_members",
+		// 	Help: "Number of members enrolled in the DAO",
+		// })
 
-		applicantCount := prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "hypha_dao_membership_applicants",
-			Help: "Number of applicants for the DHO",
-		})
+		// applicantCount := prometheus.NewGauge(prometheus.GaugeOpts{
+		// 	Name: "hypha_dao_membership_applicants",
+		// 	Help: "Number of applicants for the DHO",
+		// })
 
-		openProposals := prometheus.NewGauge(prometheus.GaugeOpts{
-			Name: "hypha_dao_proposals_total",
-			Help: "Number of open proposals to be voted on",
-		})
+		// openProposals := prometheus.NewGauge(prometheus.GaugeOpts{
+		// 	Name: "hypha_dao_proposals_total",
+		// 	Help: "Number of open proposals to be voted on",
+		// })
 
 		seedsBalance := prometheus.NewGauge(prometheus.GaugeOpts{
 			Name: "hypha_balance_balance_seeds",
@@ -303,19 +303,19 @@ var serveCmd = &cobra.Command{
 					log.Println("Retrieval error: balance: "+viper.GetString("HyphaSeedsAccount")+" token contract: "+viper.GetString("SeedsTokenContract")+" symbol: SEEDS", err)
 				}
 
-				members := models.Members(ctx, api)
-				memberCount.Set(float64(len(members)))
+				// members := models.Members(ctx, api)
+				// memberCount.Set(float64(len(members)))
 
-				applicants := models.Applicants(ctx, api)
-				applicantCount.Set(float64(len(applicants)))
+				// applicants := models.Applicants(ctx, api)
+				// applicantCount.Set(float64(len(applicants)))
 
-				proposals, err := getLegacyObjects(ctx, api, eos.AN(viper.GetString("DAOContract")), eos.Name("proposal"))
-				if err == nil {
-					openProposals.Set(float64(len(proposals)))
-				} else {
-					errorCount.Add(1)
-					log.Println("Retrieval error: an error querying legacy objects from "+viper.GetString("DAOContract")+" scope: proposal", err)
-				}
+				// proposals, err := getLegacyObjects(ctx, api, eos.AN(viper.GetString("DAOContract")), eos.Name("proposal"))
+				// if err == nil {
+				// 	openProposals.Set(float64(len(proposals)))
+				// } else {
+				// 	errorCount.Add(1)
+				// 	log.Println("Retrieval error: an error querying legacy objects from "+viper.GetString("DAOContract")+" scope: proposal", err)
+				// }
 
 				seedsPriceUsdAsset, err := getSeedsUsdPrice(ctx, api)
 				if err == nil {
@@ -327,6 +327,7 @@ var serveCmd = &cobra.Command{
 
 				docs, err := docgraph.GetAllDocuments(ctx, api, eos.AN(viper.GetString("DAOContract")))
 				if err == nil {
+					fmt.Println("document count: " + strconv.Itoa(len(docs)))
 					documentCount.Set(float64(len(docs)))
 				} else {
 					errorCount.Add(1)
@@ -344,7 +345,7 @@ var serveCmd = &cobra.Command{
 					log.Println("Error updating the vote count: ", err)
 				}
 
-				log.Println("Sleeping for : " + viper.GetDuration("ScrapeInterval").String())
+				// log.Println("Sleeping for : " + viper.GetDuration("ScrapeInterval").String())
 				time.Sleep(viper.GetDuration("ScrapeInterval"))
 			}
 		}()
@@ -354,9 +355,9 @@ var serveCmd = &cobra.Command{
 		r.MustRegister(hyphaSupply)
 		r.MustRegister(hvoiceSupply)
 		r.MustRegister(husdSupply)
-		r.MustRegister(memberCount)
-		r.MustRegister(applicantCount)
-		r.MustRegister(openProposals)
+		// r.MustRegister(memberCount)
+		// r.MustRegister(applicantCount)
+		// r.MustRegister(openProposals)
 		r.MustRegister(seedsBalance)
 		r.MustRegister(escrowedSeedsBalance)
 		r.MustRegister(hyphaSeedsAccountBalance)
